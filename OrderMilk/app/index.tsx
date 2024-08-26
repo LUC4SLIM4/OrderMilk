@@ -1,15 +1,9 @@
-import { Text, View } from "react-native";
-
-export default function Index() {
+import { Text, View, StyleSheet, Image} from "react-native";
+import Login from './Login'
+export default function App() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Sou pika menorzin exibido </Text>
+    <View>
+      <Login></Login>
     </View>
   );
 }
