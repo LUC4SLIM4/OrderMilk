@@ -55,8 +55,8 @@ const LoginScreen = () => {
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
         <View style={styles.links}>
+          <Text style={styles.link} onPress={() => navigation.navigate('SignUp')}>Cadastre-se</Text>
           <Text style={styles.link} onPress={() => navigation.navigate('ForgotPassword')}>Esqueceu a Senha?</Text>
-          <Text style={styles.link} onPress={() => navigation.navigate('SignUp')}>Não possuo conta? Cadastrar</Text>
         </View>
       </View>
     </View>
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   content: {
-    padding: 35,
+    padding: '12%',
     alignItems: 'center',
   },
   avatar: {
