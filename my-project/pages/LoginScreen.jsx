@@ -20,7 +20,7 @@ const LoginScreen = () => {
         routes: [{ name: 'AppSidebar' }],
       });
     } else {
-      Alert.alert('Login Failed', 'Username or password is incorrect');
+      Alert.alert('Falha no Login', 'Usuário ou Senha estão incorretos');
     }
   };
 
@@ -71,13 +71,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   content: {
-    padding: 30,
+    padding: 35,
     alignItems: 'center',
   },
   avatar: {
-    width: 150,
-    height: 100,
-    marginBottom: 10,
+    width: 200,
+    height: 150,
     borderRadius: 40,
   },
   input: {
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#003AAA',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 4,
@@ -109,7 +108,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   link: {
-    color: '#007bff',
+    color: '#003AAA',
     textDecorationLine: 'underline',
   },
 });

@@ -1,14 +1,14 @@
 import { View, Text, Button, StyleSheet } from 'react-native';
 
-const DashboardScreen = () => {
+const ManejoSanitario = () => {
 return(
     <View style={styles.container}>
-        <Text style={styles.text}>Dashboard Screen</Text>
+        <Text style={styles.text}>Manejo Sanitario</Text>
     </View>
 )
 }
 
-export  default DashboardScreen;
+export  default ManejoSanitario;
 
 const styles =  StyleSheet.create({
     container: {

@@ -1,14 +1,14 @@
 import { View, Text, Button, StyleSheet } from 'react-native';
 
-const SettingScreen = () => {
+const GestaoNutritiva = () => {
 return(
     <View style={styles.container}>
-        <Text style={styles.text}>Settings Screen</Text>
+        <Text style={styles.text}>Gestao Nutritiva</Text>
     </View>
 )
 }
 
-export  default SettingScreen;
+export  default GestaoNutritiva;
 
 const styles =  StyleSheet.create({
     container: {
