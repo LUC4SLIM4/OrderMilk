@@ -12,7 +12,7 @@ export  default ManejoSanitario;
 
 const styles =  StyleSheet.create({
     container: {
-        flex: 0.88,
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         },

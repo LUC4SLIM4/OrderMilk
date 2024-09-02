@@ -6,9 +6,9 @@ import RebanhoScreen from './pages/RebanhoScreen';
 import GestaoNutritiva from './pages/GestaoNutritiva';
 import ManejoSanitario from './pages/ManejoSanitario';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 
 const Drawer = createDrawerNavigator();
 
@@ -19,6 +19,11 @@ const styles = {
   container: {
     flex: 1,
     justifyContent: 'space-between',
+  },
+  image: {
+    width: 80,
+    height: 80,
+    margin: 8,
   },
 };
 
@@ -32,32 +37,41 @@ const CustomDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
       <View>
+        <Image
+          source={require('./assets/images/logo2.png')}
+          style={styles.image}
+        />
         <DrawerItem
           label="Inicio"
+          icon={() => <Ionicons name="home" size={24} color="#003AAA" />}
           onPress={() => props.navigation.navigate('InicioScreen')}
           style={styles.drawerItem}
           labelStyle={styles.label}
         />
         <DrawerItem
           label="Cadastrar Animal"
+          icon={() => <MaterialIcons name="add" size={24} color="#003AAA" />}
           onPress={() => props.navigation.navigate('CadastrarAnimal')}
           style={styles.drawerItem}
           labelStyle={styles.label}
         />
         <DrawerItem
           label="Rebanho"
+          icon={() => <MaterialIcons name="list" size={24} color="#003AAA" />}
           onPress={() => props.navigation.navigate('RebanhoScreen')}
           style={styles.drawerItem}
           labelStyle={styles.label}
         />
-         <DrawerItem
+        <DrawerItem
           label="Gestão Nutritiva"
+          icon={() => <Ionicons name="nutrition" size={24} color="#003AAA" />}
           onPress={() => props.navigation.navigate('GestaoNutritiva')}
           style={styles.drawerItem}
           labelStyle={styles.label}
         />
         <DrawerItem
           label="Manejo Sanitário"
+          icon={() => <MaterialIcons name="healing" size={24} color="#003AAA" />}
           onPress={() => props.navigation.navigate('ManejoSanitario')}
           style={styles.drawerItem}
           labelStyle={styles.label}
@@ -66,7 +80,7 @@ const CustomDrawerContent = (props) => {
       <View>
         <DrawerItem
           label="Sair"
-          icon={() => <Ionicons name="exit" size={24} color="#003AAA"/>}
+          icon={() => <Ionicons name="exit" size={24} color="#003AAA" />}
           onPress={sair}
           style={styles.drawerItem}
           labelStyle={styles.label}

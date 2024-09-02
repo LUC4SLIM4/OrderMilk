@@ -42,7 +42,7 @@ const InicioScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.8,
+    flex: 1,
     backgroundColor: '#f2f2f2',
   },
   header: {

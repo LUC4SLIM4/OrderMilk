@@ -36,7 +36,7 @@ const LoginScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Image style={styles.avatar} source={require("../assets/images/logo.png")} />
+        <Image style={styles.avatar} source={require("../assets/images/logo2.png")} />
         {inputsConfig.map((elm, index) => (
           <TextInput
             key={index}
@@ -61,7 +61,7 @@ const LoginScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.88,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 200,
+    width: 150,
     height: 150,
     borderRadius: 40,
   },
