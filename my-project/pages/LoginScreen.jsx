@@ -3,18 +3,14 @@ import { View, TextInput, Text, StyleSheet, Alert, TouchableOpacity, Image } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { isAuthenticated } from '../api/auth';
-import AppSidebar from '../AppSidebar';
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [credenciais, setCredenciais] = useState({ username: '', password: '' });
   const navigation = useNavigation();
 
   const handleLogin = async () => {
-    if (isAuthenticated(username, password)) {
-      await AsyncStorage.setItem('user', JSON.stringify({ username, password }));
-      setIsLoggedIn(true);
+    if (isAuthenticated(credenciais.username, credenciais.password)) {
+      await AsyncStorage.setItem('user', JSON.stringify(credenciais));
       navigation.reset({
         index: 0,
         routes: [{ name: 'AppSidebar' }],
@@ -28,12 +24,12 @@ const LoginScreen = () => {
     {
       label: 'Usuário',
       type: 'email',
-      setter: setUsername,
+      campo: 'username',
     },
     {
       label: 'Senha',
       type: 'password',
-      setter: setPassword,
+      campo: 'password',
     },
   ];
 
@@ -44,7 +40,7 @@ const LoginScreen = () => {
         {inputsConfig.map((elm, index) => (
           <TextInput
             key={index}
-            onChangeText={(text) => elm.setter(text)}
+            onChangeText={(text) => setCredenciais({ ...credenciais, [elm.campo]: text })}
             placeholder={elm.label}
             secureTextEntry={elm.type === 'password'}
             keyboardType={elm.type === 'email' ? 'email-address' : 'default'}
@@ -65,7 +61,7 @@ const LoginScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 0.88,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
