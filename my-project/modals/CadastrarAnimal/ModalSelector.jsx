@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 10,
-    borderRadius: 10,
     backgroundColor: '#f0f0f0', 
     marginBottom: 10,
   },
@@ -75,7 +74,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingVertical: 10,
     backgroundColor: 'red',
-    borderRadius: 10,
     alignItems: 'center',
   },
   modalCloseText: {

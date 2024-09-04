@@ -5,13 +5,18 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
+  Dimensions,
 } from "react-native";
 import CustomInput from "../components/CadastrarAnimal/CustomInput";
 import SelectBox from "../components/CadastrarAnimal/SelectBox";
 import SubmitButton from "../components/CadastrarAnimal/SubmitButton";
 import ModalSelector from "../modals/CadastrarAnimal/ModalSelector";
 import DateSelectorModal from "../modals/CadastrarAnimal/DateSelectorModal";
+import NameInputModal from "../modals/CadastrarAnimal/NameInputModal";
+import MoreItemsModal from "../modals/CadastrarAnimal/MoreItemsModal";
 import useForm from "../hooks/CadastrarAnimal/useForm";
+
+const { width } = Dimensions.get("window");
 
 const CadastrarAnimal = () => {
   const [formState, handleChange, resetForm] = useForm({
@@ -26,9 +31,14 @@ const CadastrarAnimal = () => {
     genero: "",
     momentoReprodutivo: "",
   });
-  const [selectedField, setSelectedField] = useState(null);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [dateModalVisible, setDateModalVisible] = useState(false);
+  const [nameInputModalVisible, setNameInputModalVisible] = useState(false);
+  const [moreItemsModalVisible, setMoreItemsModalVisible] = useState(false);
+
+  const [currentField, setCurrentField] = useState(null);
+  const [items, setItems] = useState({ coberturas: [], crias: [] });
 
   const options = {
     genero: ["Boi", "Vaca"],
@@ -38,12 +48,12 @@ const CadastrarAnimal = () => {
   };
 
   const handleSelect = (value) => {
-    handleChange(selectedField, value);
+    handleChange(currentField, value);
     setModalVisible(false);
   };
 
   const openModal = (field) => {
-    setSelectedField(field);
+    setCurrentField(field);
     setModalVisible(true);
   };
 
@@ -52,9 +62,52 @@ const CadastrarAnimal = () => {
     setDateModalVisible(false);
   };
 
+  const handleNameInputConfirm = (name) => {
+    setItems(prevState => ({
+      ...prevState,
+      [currentField]: [...prevState[currentField], name]
+    }));
+    setNameInputModalVisible(false);
+  };
+
+  const handleMoreItemsModal = (field) => {
+    setCurrentField(field);
+    setMoreItemsModalVisible(true);
+  };
+
   const handleSubmit = () => {
     console.log("Dados do Animal Cadastrado:", formState);
+    console.log("Coberturas:", items.coberturas);
+    console.log("Crias:", items.crias);
+    
+    // Reset form and items
     resetForm();
+    setItems({ coberturas: [], crias: [] });
+  };
+
+  const handleItemEdit = (index, newValue) => {
+    const updatedItems = [...items[currentField]];
+    updatedItems[index] = newValue;
+    setItems(prevState => ({
+      ...prevState,
+      [currentField]: updatedItems
+    }));
+  };
+
+  const handleItemRemove = (index) => {
+    const updatedItems = items[currentField].filter((_, i) => i !== index);
+    setItems(prevState => ({
+      ...prevState,
+      [currentField]: updatedItems
+    }));
+  };
+
+  const renderItems = (field) => {
+    return items[field].slice(0, 3).map((item, index) => (
+      <View key={index} style={styles.itemBox}>
+        <Text>{item}</Text>
+      </View>
+    ));
   };
 
   return (
@@ -93,6 +146,25 @@ const CadastrarAnimal = () => {
             placeholder="Brinco do Pai"
             keyboardType="numeric"
           />
+          <Text style={styles.sectionLabel}>Coberturas</Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              setCurrentField('coberturas');
+              setNameInputModalVisible(true);
+            }}
+          >
+            <Text style={styles.addButtonText}>Adicionar Cobertura</Text>
+          </TouchableOpacity>
+          {renderItems('coberturas')}
+          {items.coberturas.length > 3 && (
+            <TouchableOpacity
+              style={styles.moreButton}
+              onPress={() => handleMoreItemsModal('coberturas')}
+            >
+              <Text style={styles.moreButtonText}>Mais</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.column}>
           <CustomInput
@@ -126,12 +198,31 @@ const CadastrarAnimal = () => {
             placeholder="Peso"
             keyboardType="numeric"
           />
+          <Text style={styles.sectionLabel}>Crias</Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              setCurrentField('crias');
+              setNameInputModalVisible(true);
+            }}
+          >
+            <Text style={styles.addButtonText}>Adicionar Cria</Text>
+          </TouchableOpacity>
+          {renderItems('crias')}
+          {items.crias.length > 3 && (
+            <TouchableOpacity
+              style={styles.moreButton}
+              onPress={() => handleMoreItemsModal('crias')}
+            >
+              <Text style={styles.moreButtonText}>Mais</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <SubmitButton onPress={handleSubmit} />
       <ModalSelector
         visible={modalVisible}
-        options={options[selectedField]}
+        options={options[currentField]}
         onSelect={handleSelect}
         onClose={() => setModalVisible(false)}
       />
@@ -140,19 +231,37 @@ const CadastrarAnimal = () => {
         onClose={() => setDateModalVisible(false)}
         onDateSelected={handleDateSelect}
       />
+      <NameInputModal
+        visible={nameInputModalVisible}
+        onClose={() => setNameInputModalVisible(false)}
+        onConfirm={handleNameInputConfirm}
+      />
+      <MoreItemsModal
+        visible={moreItemsModalVisible}
+        items={items[currentField]}
+        onClose={() => setMoreItemsModalVisible(false)}
+        onItemEdit={handleItemEdit}
+        onItemRemove={handleItemRemove}
+      />
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 16,
     backgroundColor: "#FFF",
+    justifyContent: "flex-start",
+  },
+  row: {
+    flexDirection: "row",
     justifyContent: "space-between",
   },
-  row: { flexDirection: "row", justifyContent: "space-between" },
-  column: { flex: 2, marginHorizontal: 8 },
+  column: {
+    flex: 1,
+    marginHorizontal: 8,
+  },
   dateButton: {
     height: 40,
     borderColor: "#ccc",
@@ -162,16 +271,53 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20, // Espaço inferior para alinhar com outros elementos
+    marginBottom: 20,
   },
   dateButtonText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 4,
+    fontSize: 16,
     color: "#003AAA",
-    textAlign: "left", // Alinha o texto à esquerda
   },
-  dateText: { fontSize: 16, color: "#333" },
+  dateText: {
+    fontSize: 16,
+    color: "#000",
+  },
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#003AAA',
+    textAlign: 'center',
+  },
+  itemBox: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  addButton: {
+    backgroundColor: "#003AAA",
+    padding: '5%',
+    borderRadius: 5,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  addButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+  },
+  moreButton: {
+    backgroundColor: "#003AAA",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  moreButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+  },
 });
 
 export default CadastrarAnimal;
