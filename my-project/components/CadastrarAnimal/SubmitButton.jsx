@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'center',
     width: '80%',
-    marginTop: 15,
+    marginTop: 'auto',
   },
   submitButtonText: {
     color: '#fff',

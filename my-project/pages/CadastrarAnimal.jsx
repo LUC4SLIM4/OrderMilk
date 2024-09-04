@@ -157,7 +157,7 @@ const CadastrarAnimal = () => {
             <Text style={styles.addButtonText}>Adicionar Cobertura</Text>
           </TouchableOpacity>
           {renderItems('coberturas')}
-          {items.coberturas.length > 3 && (
+          {items.coberturas.length > 0 && (
             <TouchableOpacity
               style={styles.moreButton}
               onPress={() => handleMoreItemsModal('coberturas')}
@@ -209,7 +209,7 @@ const CadastrarAnimal = () => {
             <Text style={styles.addButtonText}>Adicionar Cria</Text>
           </TouchableOpacity>
           {renderItems('crias')}
-          {items.crias.length > 3 && (
+          {items.crias.length > 0 && (
             <TouchableOpacity
               style={styles.moreButton}
               onPress={() => handleMoreItemsModal('crias')}
@@ -274,8 +274,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   dateButtonText: {
-    fontSize: 16,
-    color: "#003AAA",
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#003AAA',
+    textAlign: 'center',
   },
   dateText: {
     fontSize: 16,
@@ -301,7 +304,7 @@ const styles = StyleSheet.create({
     padding: '5%',
     borderRadius: 5,
     alignItems: "center",
-    marginVertical: 10,
+
   },
   addButtonText: {
     color: "#FFF",

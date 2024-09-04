@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: 'red',
     alignItems: 'center',
+    borderRadius: 5,
   },
   modalCloseText: {
     color: '#fff',

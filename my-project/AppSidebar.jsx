@@ -1,93 +1,106 @@
-import React from 'react';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import InicioScreen from './pages/InicioScreen';
-import CadastrarAnimal from './pages/CadastrarAnimal';
-import RebanhoScreen from './pages/RebanhoScreen';
-import GestaoNutritiva from './pages/GestaoNutritiva';
-import ManejoSanitario from './pages/ManejoSanitario';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { View, Image } from 'react-native';
+import React from "react";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
+import InicioScreen from "./pages/InicioScreen";
+import CadastrarAnimal from "./pages/CadastrarAnimal";
+import RebanhoScreen from "./pages/RebanhoScreen";
+import GestaoNutritiva from "./pages/GestaoNutritiva";
+import ManejoSanitario from "./pages/ManejoSanitario";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { View, Image, StyleSheet } from "react-native";
 
 const Drawer = createDrawerNavigator();
 
-const styles = {
-  label: {
-    color: '#003AAA',
-  },
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
+  },
+  label: {
+    color: "#003AAA",
+    fontSize: 16,
   },
   image: {
     width: 80,
     height: 80,
     margin: 8,
   },
-};
+});
 
 const CustomDrawerContent = (props) => {
   const navigation = useNavigation();
   const sair = async () => {
     await AsyncStorage.clear();
-    navigation.navigate('LoginScreen');
+    navigation.navigate("LoginScreen");
   };
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
       <View>
-        <Image
-          source={require('./assets/images/logo2.png')}
-          style={styles.image}
-        />
-        <DrawerItem
-          label="Inicio"
-          icon={() => <Ionicons name="home" size={24} color="#003AAA" />}
-          onPress={() => props.navigation.navigate('InicioScreen')}
-          style={styles.drawerItem}
-          labelStyle={styles.label}
-        />
-        <DrawerItem
-          label="Cadastrar Animal"
-          icon={() => <MaterialIcons name="add" size={24} color="#003AAA" />}
-          onPress={() => props.navigation.navigate('CadastrarAnimal')}
-          style={styles.drawerItem}
-          labelStyle={styles.label}
-        />
-        <DrawerItem
-          label="Rebanho"
-          icon={() => <MaterialIcons name="list" size={24} color="#003AAA" />}
-          onPress={() => props.navigation.navigate('RebanhoScreen')}
-          style={styles.drawerItem}
-          labelStyle={styles.label}
-        />
-        <DrawerItem
-          label="Gestão Nutritiva"
-          icon={() => <Ionicons name="nutrition" size={24} color="#003AAA" />}
-          onPress={() => props.navigation.navigate('GestaoNutritiva')}
-          style={styles.drawerItem}
-          labelStyle={styles.label}
-        />
-        <DrawerItem
-          label="Manejo Sanitário"
-          icon={() => <MaterialIcons name="healing" size={24} color="#003AAA" />}
-          onPress={() => props.navigation.navigate('ManejoSanitario')}
-          style={styles.drawerItem}
-          labelStyle={styles.label}
-        />
+        <Image source={require("./assets/images/logo2.png")} style={styles.image} />
+        {drawerItems.map((item) => (
+          <DrawerItem
+            key={item.label}
+            label={item.label}
+            icon={() => <item.icon name={item.name} size={24} color="#003AAA" />}
+            onPress={() => props.navigation.navigate(item.screen)}
+            labelStyle={styles.label}
+          />
+        ))}
       </View>
       <View>
         <DrawerItem
           label="Sair"
           icon={() => <Ionicons name="exit" size={24} color="#003AAA" />}
           onPress={sair}
-          style={styles.drawerItem}
           labelStyle={styles.label}
         />
       </View>
     </DrawerContentScrollView>
   );
+};
+
+const drawerItems = [
+  {
+    label: "Inicio",
+    screen: "InicioScreen",
+    icon: Ionicons,
+    name: "home",
+  },
+  {
+    label: "Cadastrar Animal",
+    screen: "CadastrarAnimal",
+    icon: MaterialIcons,
+    name: "add",
+  },
+  {
+    label: "Rebanho",
+    screen: "RebanhoScreen",
+    icon: MaterialIcons,
+    name: "list",
+  },
+  {
+    label: "Gestão Nutritiva",
+    screen: "GestaoNutritiva",
+    icon: Ionicons,
+    name: "nutrition",
+  },
+  {
+    label: "Manejo Sanitário",
+    screen: "ManejoSanitario",
+    icon: MaterialIcons,
+    name: "healing",
+  },
+];
+
+const commonHeaderOptions = {
+  headerTitleAlign: "center",
+  headerTintColor: "#003AAA",
+  headerTitleStyle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 };
 
 const AppSidebar = () => {
@@ -96,11 +109,31 @@ const AppSidebar = () => {
       initialRouteName="InicioScreen"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="InicioScreen" component={InicioScreen} />
-      <Drawer.Screen name="CadastrarAnimal" component={CadastrarAnimal} />
-      <Drawer.Screen name="RebanhoScreen" component={RebanhoScreen} />
-      <Drawer.Screen name="GestaoNutritiva" component={GestaoNutritiva} />
-      <Drawer.Screen name="ManejoSanitario" component={ManejoSanitario} />
+      <Drawer.Screen
+        name="InicioScreen"
+        component={InicioScreen}
+        options={{ title: "Início", ...commonHeaderOptions }}
+      />
+      <Drawer.Screen
+        name="CadastrarAnimal"
+        component={CadastrarAnimal}
+        options={{ title: "Cadastro de Animal", ...commonHeaderOptions }}
+      />
+      <Drawer.Screen
+        name="RebanhoScreen"
+        component={RebanhoScreen}
+        options={{ title: "Gestão de Rebanho", ...commonHeaderOptions }}
+      />
+      <Drawer.Screen
+        name="GestaoNutritiva"
+        component={GestaoNutritiva}
+        options={{ title: "Gestão Nutricional", ...commonHeaderOptions }}
+      />
+      <Drawer.Screen
+        name="ManejoSanitario"
+        component={ManejoSanitario}
+        options={{ title: "Manejo Sanitário", ...commonHeaderOptions }}
+      />
     </Drawer.Navigator>
   );
 };

@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   editContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
+    width: 250,
   },
   editInput: {
     borderWidth: 1,
@@ -144,6 +144,9 @@ const styles = StyleSheet.create({
   saveButton: {
     backgroundColor: "#003AAA",
     padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',  
+    alignItems: 'center',      
   },
   saveButtonText: {
     color: "#fff",
@@ -155,6 +158,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: "center",
+    borderRadius: 5,
   },
   closeButtonText: {
     color: "#fff",
@@ -170,6 +174,10 @@ const styles = StyleSheet.create({
     padding: 5,
     width: 80,
     height: 30,
+    borderRadius: 5,
+    justifyContent: 'center',  
+    alignItems: 'center',      
+    marginRight: 10,           
   },
   editButtonText: {
     color: "#FFF",
@@ -180,7 +188,9 @@ const styles = StyleSheet.create({
     padding: 5,
     width: 80,
     height: 30,
-    marginLeft: 10,
+    borderRadius: 5,
+    justifyContent: 'center', 
+    alignItems: 'center',      
   },
   removeButtonText: {
     color: "#FFF",
