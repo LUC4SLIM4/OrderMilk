@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: '100%',
     textAlign: 'center', // Centraliza o texto dentro do TextInput
-  },
+  },  
   label: {
     fontSize: 14,
     fontWeight: 'bold',

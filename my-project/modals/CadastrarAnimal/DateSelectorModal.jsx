@@ -1,103 +1,100 @@
 import React, { useState } from 'react';
-import { View, Text, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Modal, Button, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Modal from 'react-native-modal'; // Certifique-se de ter instalado react-native-modal
 
 const DateSelectorModal = ({ isVisible, onClose, onDateSelected }) => {
-  const [date, setDate] = useState(new Date());
-  const [tempDate, setTempDate] = useState(null); // Estado para armazenar a data temporária
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  const [confirmButtonVisible, setConfirmButtonVisible] = useState(false);
+
+  const handleDateChange = (event, date) => {
+    if (Platform.OS === 'android') {
+      setShowPicker(false);
+    }
+    if (date) {
+      setSelectedDate(date);
+    }
+  };
 
   const handleConfirm = () => {
-    if (tempDate) {
-      setDate(tempDate); // Atualiza a data final
-      onDateSelected(tempDate); // Passa a data final para o componente pai
+    if (onDateSelected) {
+      onDateSelected(selectedDate);
     }
-    setShowPicker(false);
-    setConfirmButtonVisible(false);
     onClose();
-  };
-
-  const handleChange = (event, selectedDate) => {
-    if (Platform.OS === 'android') {
-      setDate(selectedDate || date);
-      handleConfirm();
-    } else {
-      setTempDate(selectedDate || date); // Armazena a data temporária
-    }
-  };
-
-  const handleChooseDate = () => {
-    setShowPicker(true);
-    setConfirmButtonVisible(true);
   };
 
   return (
     <Modal
-      isVisible={isVisible}
-      onBackdropPress={onClose}
-      style={styles.modal}
+      transparent={true}
+      visible={isVisible}
+      animationType="slide"
+      onRequestClose={onClose}
     >
-      <View style={styles.container}>
-        <Text style={styles.header}>Selecione a Data</Text>
-        {showPicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={handleChange}
-          />
-        )}
-        <TouchableOpacity style={styles.button} onPress={handleChooseDate}>
-          <Text style={styles.buttonText}>Escolher Data</Text>
-        </TouchableOpacity>
-        {Platform.OS === 'ios' && confirmButtonVisible && (
-          <>
-            <TouchableOpacity style={styles.button} onPress={handleConfirm}>
-              <Text style={styles.buttonText}>Confirmar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={onClose}>
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
-          </>
-        )}
-        {Platform.OS === 'android' && (
-          <TouchableOpacity style={styles.button} onPress={onClose}>
-            <Text style={styles.buttonText}>Cancelar</Text>
-          </TouchableOpacity>
-        )}
+      <View style={styles.overlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.title}>Escolher Data</Text>
+          {Platform.OS === 'ios' && (
+            <DateTimePicker
+              value={selectedDate}
+              mode="date"
+              display="spinner"
+              onChange={handleDateChange}
+              textColor="#000"
+            />
+          )}
+          {Platform.OS === 'android' && (
+            <>
+              <Button title="Selecionar Data" onPress={() => setShowPicker(true)} />
+              {showPicker && (
+                <DateTimePicker
+                  value={selectedDate}
+                  mode="date"
+                  display="default"
+                  onChange={handleDateChange}
+                />
+              )}
+            </>
+          )}
+          <View style={styles.buttonContainer}>
+            <View style={styles.button}>
+              <Button title="Confirmar" onPress={handleConfirm} color="#007BFF" />
+            </View>
+            <View style={styles.button}>
+              <Button title="Cancelar" onPress={onClose} color="red" />
+            </View>
+          </View>
+        </View>
       </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  modal: {
+  overlay: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  container: {
+  modalContainer: {
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    width: '90%',
+    width: '80%',
     alignItems: 'center',
   },
-  header: {
+  title: {
     fontSize: 18,
     marginBottom: 20,
   },
-  button: {
-    marginTop: 10,
-    backgroundColor: '#003AAA',
-    padding: 10,
-    borderRadius: 5,
-    width: '80%',
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
   },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
+  button: {
+    flex: 1,
+    marginHorizontal: 5,
   },
 });
 
