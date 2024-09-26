@@ -7,7 +7,7 @@ const InicioScreen = () => {
 
   const buttons = [
     { title: 'Cadastrar Animal', onPress: () => navigation.navigate('CadastrarAnimal') },
-    { title: 'Rebanho', onPress: () => console.log('Rebanho') },
+    { title: 'Rebanho', onPress: () => navigation.navigate('RebanhoScreen') },
     { title: 'Produção', onPress: () => console.log('Produção') },
     { title: 'Outros', onPress: () => console.log('Outros'), style: styles.lastButton },
   ];
