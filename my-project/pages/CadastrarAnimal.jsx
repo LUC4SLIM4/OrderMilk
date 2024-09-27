@@ -80,7 +80,6 @@ const CadastrarAnimal = () => {
     console.log("Coberturas:", items.coberturas);
     console.log("Crias:", items.crias);
     
-    // Reset form and items
     resetForm();
     setItems({ coberturas: [], crias: [] });
   };
