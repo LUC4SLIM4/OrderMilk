@@ -13,7 +13,7 @@ const InicioScreen = () => {
   ];
 
   return (
-    <View style={styles.buttonContainer}>
+    <View style={styles.buttonContainer}> 
       {buttons.map((button, index) => (
         <TouchableOpacity
           key={index}
