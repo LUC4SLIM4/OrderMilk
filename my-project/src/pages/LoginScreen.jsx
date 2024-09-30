@@ -1,29 +1,42 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; // Importe as funções necessárias
-import app from '../config/firebaseConfig'; // Importando a configuração do Firebase
-import Input from '../components/LoginScreen/Input'; 
-import Button from '../components/LoginScreen/Button'; 
-import Link from '../components/LoginScreen/Link'; 
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import app from '../config/firebaseConfig';
+import Input from '../components/LoginScreen/Input';
+import Button from '../components/LoginScreen/Button';
+import Link from '../components/LoginScreen/Link';
+import { showMessage } from 'react-native-flash-message'; // Importe a função
 
 const LoginScreen = () => {
   const [credenciais, setCredenciais] = useState({ username: '', password: '' });
   const navigation = useNavigation();
-  const auth = getAuth(app); // Inicializando a autenticação com o Firebase
+  const auth = getAuth(app);
 
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, credenciais.username, credenciais.password);
-      // O usuário foi autenticado com sucesso
       await AsyncStorage.setItem('user', JSON.stringify(userCredential.user));
       navigation.reset({
         index: 0,
         routes: [{ name: 'AppSidebar' }],
       });
     } catch (error) {
-      Alert.alert('Falha no Login', 'Usuário ou Senha estão incorretos');
+      let message = 'Usuário ou Senha estão incorretos.';
+      switch (error.code) {
+        case 'auth/user-not-found':
+          message = 'Usuário não encontrado.';
+          break;
+        case 'auth/wrong-password':
+          message = 'Senha incorreta.';
+          break;
+      }
+      showMessage({
+        message,
+        type: 'danger', 
+        duration: 3000,
+      });
     }
   };
 
@@ -62,18 +75,25 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   content: {
-    padding: '12%',
+    padding: 20,
     alignItems: 'center',
+    width: '100%',
   },
   avatar: {
     width: 150,
     height: 150,
     borderRadius: 40,
+    marginBottom: 20,
   },
   links: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '88%',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  linkText: {
+    flex: 1,
+    textAlign: 'center',
+    maxWidth: 120,
   },
 });
 

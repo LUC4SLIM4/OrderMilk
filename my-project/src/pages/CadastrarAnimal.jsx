@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Dimensions,
-} from "react-native";
+import {View,ScrollView,StyleSheet,TouchableOpacity,Text,Dimensions,} from "react-native";
 import CustomInput from "../components/CadastrarAnimal/CustomInput";
 import SelectBox from "../components/CadastrarAnimal/SelectBox";
 import SubmitButton from "../components/CadastrarAnimal/SubmitButton";
@@ -16,21 +9,8 @@ import NameInputModal from "../modals/CadastrarAnimal/NameInputModal";
 import MoreItemsModal from "../modals/CadastrarAnimal/MoreItemsModal";
 import useForm from "../hooks/CadastrarAnimal/useForm";
 
-const { width } = Dimensions.get("window");
-
 const CadastrarAnimal = () => {
-  const [formState, handleChange, resetForm] = useForm({
-    brinco: "",
-    nomeAnimal: "",
-    raca: "",
-    cor: "",
-    pai: "",
-    mae: "",
-    dataNascimento: "",
-    peso: "",
-    genero: "",
-    momentoReprodutivo: "",
-  });
+  const [formState, handleChange, resetForm] = useForm({ brinco: "", nomeAnimal: "", raca: "", cor: "", pai: "", mae: "", dataNascimento: "", peso: "", genero: "", momentoReprodutivo: ""});
 
   const [modalVisible, setModalVisible] = useState(false);
   const [dateModalVisible, setDateModalVisible] = useState(false);
@@ -254,6 +234,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   row: {
+    marginTop: 50,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -287,6 +268,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     marginBottom: 4,
+    marginTop: 30,
     color: '#003AAA',
     textAlign: 'center',
   },
