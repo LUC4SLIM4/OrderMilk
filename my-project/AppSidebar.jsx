@@ -1,10 +1,10 @@
 import React from "react";
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import InicioScreen from "./pages/InicioScreen";
-import CadastrarAnimal from "./pages/CadastrarAnimal";
-import RebanhoScreen from "./pages/RebanhoScreen";
-import GestaoNutritiva from "./pages/GestaoNutritiva";
-import ManejoSanitario from "./pages/ManejoSanitario";
+import InicioScreen from "./src/pages/InicioScreen";
+import CadastrarAnimal from "./src/pages/CadastrarAnimal";
+import RebanhoScreen from "./src/pages/RebanhoScreen";
+import GestaoNutritiva from "./src/pages/GestaoNutritiva";
+import ManejoSanitario from "./src/pages/ManejoSanitario";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -38,7 +38,7 @@ const CustomDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.container}>
       <View>
-        <Image source={require("./assets/images/logo2.png")} style={styles.image} />
+        <Image source={require("./src/assets/images/logo2.png")} style={styles.image} />
         {drawerItems.map((item) => (
           <DrawerItem
             key={item.label}

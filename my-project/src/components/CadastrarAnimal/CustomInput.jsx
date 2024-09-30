@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     width: '100%',
-    textAlign: 'center', // Centraliza o texto dentro do TextInput
+    textAlign: 'center', 
   },  
   label: {
     fontSize: 14,
