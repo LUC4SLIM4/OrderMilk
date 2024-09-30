@@ -5,9 +5,14 @@ const Input = ({ label, type, onChangeText }) => (
   <TextInput
     placeholder={label}
     secureTextEntry={type === 'password'}
-    keyboardType={type === 'email' ? 'email-address' : 'default'}
+    keyboardType={
+      type === 'email' ? 'email-address' :
+      type === 'number' ? 'numeric' : 
+      'default'
+    }
     onChangeText={onChangeText}
     style={styles.input}
+    autoCapitalize='none'
   />
 );
 

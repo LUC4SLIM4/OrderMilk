@@ -6,6 +6,7 @@ import LoginScreen from './pages/LoginScreen';
 import AppSidebar from './AppSidebar';
 import InicioScreen from './pages/InicioScreen';
 import CadastrarAnimal from './pages/CadastrarAnimal';
+import SignUp from './pages/SignUp';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ const AppStack = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isLoggedIn ? 'AppSidebar' : 'LoginScreen'}>
         <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
         <Stack.Screen name="AppSidebar" component={AppSidebar} options={{ headerShown: false }} />
         <Stack.Screen name="InicioScreen" component={InicioScreen} options={{ headerShown: false }} />
         <Stack.Screen name="CadastrarAnimal" component={CadastrarAnimal} options={{ headerShown: false }} />

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { isAuthenticated } from '../api/auth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; // Importe as funções necessárias
+import app from '../config/firebaseConfig'; // Importando a configuração do Firebase
 import Input from '../components/LoginScreen/Input'; 
 import Button from '../components/LoginScreen/Button'; 
 import Link from '../components/LoginScreen/Link'; 
@@ -10,15 +11,18 @@ import Link from '../components/LoginScreen/Link';
 const LoginScreen = () => {
   const [credenciais, setCredenciais] = useState({ username: '', password: '' });
   const navigation = useNavigation();
+  const auth = getAuth(app); // Inicializando a autenticação com o Firebase
 
   const handleLogin = async () => {
-    if (isAuthenticated(credenciais.username, credenciais.password)) {
-      await AsyncStorage.setItem('user', JSON.stringify(credenciais));
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, credenciais.username, credenciais.password);
+      // O usuário foi autenticado com sucesso
+      await AsyncStorage.setItem('user', JSON.stringify(userCredential.user));
       navigation.reset({
         index: 0,
         routes: [{ name: 'AppSidebar' }],
       });
-    } else {
+    } catch (error) {
       Alert.alert('Falha no Login', 'Usuário ou Senha estão incorretos');
     }
   };
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
   links: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
+    width: '88%',
   },
 });
 
