@@ -43,7 +43,7 @@ export default function RebanhoScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}> 
       <FilterBar
         pesquisa={pesquisa}
         setPesquisa={setPesquisa}
