@@ -4,7 +4,7 @@ const useValidation = (credenciais) => {
     const validateFields = () => {
         const { name, email, propertyName, propertySize, lactatingAnimals, password, confirmpassword } = credenciais;
 
-        if (!name || !email || !propertyName || !propertySize || !lactatingAnimals || !password || !confirmpassword) {
+        if (!credenciais) {
             showMessage({ message: 'Por favor, preencha todos os campos.', type: "danger" });
             return false;
         }

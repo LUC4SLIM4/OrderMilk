@@ -7,7 +7,7 @@ import app from '../config/firebaseConfig';
 import Input from '../components/LoginScreen/Input';
 import Button from '../components/LoginScreen/Button';
 import Link from '../components/LoginScreen/Link';
-import { showMessage } from 'react-native-flash-message'; // Importe a função
+import { showMessage } from 'react-native-flash-message'; 
 
 const LoginScreen = () => {
   const [credenciais, setCredenciais] = useState({ username: '', password: '' });

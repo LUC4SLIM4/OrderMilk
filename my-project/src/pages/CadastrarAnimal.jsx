@@ -8,15 +8,26 @@ import DateSelectorModal from "../modals/CadastrarAnimal/DateSelectorModal";
 import NameInputModal from "../modals/CadastrarAnimal/NameInputModal";
 import MoreItemsModal from "../modals/CadastrarAnimal/MoreItemsModal";
 import useForm from "../hooks/CadastrarAnimal/useForm";
+import { showMessage } from 'react-native-flash-message'; 
 
 const CadastrarAnimal = () => {
-  const [formState, handleChange, resetForm] = useForm({ brinco: "", nomeAnimal: "", raca: "", cor: "", pai: "", mae: "", dataNascimento: "", peso: "", genero: "", momentoReprodutivo: ""});
+  const [formState, handleChange, resetForm] = useForm({
+    brinco: "",
+    nomeAnimal: "",
+    raca: "",
+    cor: "",
+    pai: "",
+    mae: "",
+    dataNascimento: "",
+    peso: "",
+    genero: "",
+    momentoReprodutivo: ""
+  });
 
   const [modalVisible, setModalVisible] = useState(false);
   const [dateModalVisible, setDateModalVisible] = useState(false);
   const [nameInputModalVisible, setNameInputModalVisible] = useState(false);
   const [moreItemsModalVisible, setMoreItemsModalVisible] = useState(false);
-
   const [currentField, setCurrentField] = useState(null);
   const [items, setItems] = useState({ coberturas: [], crias: [] });
 
@@ -25,6 +36,29 @@ const CadastrarAnimal = () => {
     raca: ["Raça 1", "Raça 2", "Raça 3"],
     cor: ["Preto", "Branco", "Marrom"],
     momentoReprodutivo: ["Em Lactação", "Prenha", "Vazia"],
+  };
+
+  const validateForm = () => {
+    const requiredFields = [
+      'brinco', 
+      'nomeAnimal', 
+      'raca', 
+      'cor', 
+      'pai', 
+      'mae', 
+      'dataNascimento', 
+      'peso', 
+      'genero', 
+      'momentoReprodutivo'
+    ];
+    
+    for (const field of requiredFields) {
+      if (!formState[field]) {
+        showMessage({ message: `O campo ${field} é obrigatório.`, type: "danger" });
+        return false;
+      }
+    }
+    return true;
   };
 
   const handleSelect = (value) => {
@@ -56,6 +90,8 @@ const CadastrarAnimal = () => {
   };
 
   const handleSubmit = () => {
+    if (!validateForm()) return;
+
     console.log("Dados do Animal Cadastrado:", formState);
     console.log("Coberturas:", items.coberturas);
     console.log("Crias:", items.crias);
@@ -219,8 +255,8 @@ const CadastrarAnimal = () => {
         visible={moreItemsModalVisible}
         items={items[currentField]}
         onClose={() => setMoreItemsModalVisible(false)}
-        onItemEdit={handleItemEdit}
-        onItemRemove={handleItemRemove}
+        onEdit={handleItemEdit}
+        onRemove={handleItemRemove}
       />
     </ScrollView>
   );

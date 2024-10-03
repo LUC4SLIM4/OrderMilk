@@ -38,7 +38,7 @@ const AppStack = () => {
           <Stack.Screen name="InicioScreen" component={InicioScreen} options={{ headerShown: false }} />
           <Stack.Screen name="CadastrarAnimal" component={CadastrarAnimal} options={{ headerShown: false }} />
         </Stack.Navigator>
-        <FlashMessage position="top" />
+        <FlashMessage position="bottom" />
       </NavigationContainer>
     </View>
   );
