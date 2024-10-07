@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Chart from '../components/InicioScreen/Chart';
 
 const InicioScreen = () => {
   const navigation = useNavigation();
@@ -8,48 +9,60 @@ const InicioScreen = () => {
   const buttons = [
     { title: 'Cadastrar Animal', onPress: () => navigation.navigate('CadastrarAnimal') },
     { title: 'Rebanho', onPress: () => navigation.navigate('RebanhoScreen') },
-    { title: 'Produção', onPress: () => console.log('Produção') },
-    { title: 'Outros', onPress: () => console.log('Outros'), style: styles.lastButton },
+    { title: 'Manejo Sanitário', onPress: () => navigation.navigate('ManejoSanitario') },
+    { title: 'Outros', onPress: () => console.log('Outros') },
+    { title: 'Botão 5', onPress: () => console.log('Botão 5') },
+    { title: 'Botão 6', onPress: () => console.log('Botão 6') },
   ];
 
   return (
-    <View style={styles.buttonContainer}> 
-      {buttons.map((button, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[styles.button, button.style]}
-          onPress={button.onPress}
-        >
-          <Text style={styles.buttonText}>{button.title}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.buttonGrid}>
+          {buttons.map((button, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.button}
+              onPress={button.onPress}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>{button.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={styles.chartContainer}>
+          <Chart />
+        </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    flex: 0.88,
-    justifyContent: 'center',
-    alignItems: 'center',
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  buttonGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   button: {
-    width: 300,
-    height: 100,
     backgroundColor: '#003AAA',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 5,
+    padding: 50,
     borderRadius: 5,
-  },
-  lastButton: {
-    height: 50,
-    backgroundColor: '#0055FF',
+    width: '48%',
+    marginBottom: 10,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  chartContainer: {
+    alignItems: 'center',
   },
 });
 

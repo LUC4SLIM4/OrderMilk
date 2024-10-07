@@ -13,7 +13,7 @@ import ForgotPassword from './src/pages/ForgotPassword';
 
 const Stack = createStackNavigator();
 
-const AppStack = () => {
+const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -51,4 +51,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppStack;
+export default App;

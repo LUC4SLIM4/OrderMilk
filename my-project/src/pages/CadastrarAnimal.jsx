@@ -58,7 +58,8 @@ const CadastrarAnimal = () => {
         return false;
       }
     }
-    return true;
+    showMessage({ message: `A vaca ${formState.nomeAnimal} foi cadastrada com sucesso.`, type: "success" });
+    return true
   };
 
   const handleSelect = (value) => {

@@ -24,7 +24,7 @@ const useValidation = (credenciais) => {
             showMessage({ message: 'As senhas não coincidem.', type: "danger" });
             return false;
         }
-
+        showMessage({ message: `O usuário foi cadastrado com sucesso.`, type: "success" });
         return true;
     };
 
