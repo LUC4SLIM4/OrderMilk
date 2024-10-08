@@ -10,6 +10,7 @@ import InicioScreen from './src/pages/InicioScreen';
 import CadastrarAnimal from './src/pages/CadastrarAnimal';
 import SignUp from './src/pages/SignUp';
 import ForgotPassword from './src/pages/ForgotPassword';
+import RegistrarTiradaScreen from './src/pages/RegistrarTiradaScreen';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ const App = () => {
           <Stack.Screen name="AppSidebar" component={AppSidebar} options={{ headerShown: false }} />
           <Stack.Screen name="InicioScreen" component={InicioScreen} options={{ headerShown: false }} />
           <Stack.Screen name="CadastrarAnimal" component={CadastrarAnimal} options={{ headerShown: false }} />
+          <Stack.Screen name="RegistrarTiradaScreen" component={RegistrarTiradaScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
         <FlashMessage position="bottom" />
       </NavigationContainer>

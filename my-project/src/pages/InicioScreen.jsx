@@ -11,7 +11,7 @@ const InicioScreen = () => {
     { title: 'Rebanho', onPress: () => navigation.navigate('RebanhoScreen') },
     { title: 'Manejo Sanitário', onPress: () => navigation.navigate('ManejoSanitario') },
     { title: 'Outros', onPress: () => console.log('Outros') },
-    { title: 'Botão 5', onPress: () => console.log('Botão 5') },
+    { title: 'Registrar Tirada', onPress: () => navigation.navigate('RegistrarTiradaScreen') },
     { title: 'Botão 6', onPress: () => console.log('Botão 6') },
   ];
 

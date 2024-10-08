@@ -5,6 +5,7 @@ import CadastrarAnimal from "./src/pages/CadastrarAnimal";
 import RebanhoScreen from "./src/pages/RebanhoScreen";
 import GestaoNutritiva from "./src/pages/GestaoNutritiva";
 import ManejoSanitario from "./src/pages/ManejoSanitario";
+import RegistrarTiradaScreen from "./src/pages/RegistrarTiradaScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -133,6 +134,11 @@ const AppSidebar = () => {
         name="ManejoSanitario"
         component={ManejoSanitario}
         options={{ title: "Manejo Sanitário", ...commonHeaderOptions }}
+      />
+      <Drawer.Screen
+        name="RegistrarTiradaScreen"
+        component={RegistrarTiradaScreen}
+        options={{ title: "Registrar Tirada", ...commonHeaderOptions }}
       />
     </Drawer.Navigator>
   );
