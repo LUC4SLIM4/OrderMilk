@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
-import { View, Text, Button, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Importando o ícone
-import DateTimePickerModal from "react-native-modal-datetime-picker"; // Importando o DatePicker Modal
+import { View, Text, ScrollView, FlatList, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-const ControleProducaoScreen = () => {
+const RegistrarTirada = () => {
   const [data, setData] = useState(new Date());
   const [modoTirada, setModoTirada] = useState(null);
   const [vacas, setVacas] = useState([
     { id: '1', nome: 'Vaca 1', brinco: '123' },
     { id: '2', nome: 'Vaca 2', brinco: '124' },
+    { id: '3', nome: 'Vaca 3', brinco: '125' },
+    { id: '4', nome: 'Vaca 4', brinco: '126' },
+    { id: '5', nome: 'Vaca 5', brinco: '127' },
+    { id: '6', nome: 'Vaca 6', brinco: '128' },
+    { id: '7', nome: 'Vaca 7', brinco: '129' },
+    { id: '8', nome: 'Vaca 8', brinco: '130' },
+    { id: '9', nome: 'Vaca 9', brinco: '131' },
+    { id: '10', nome: 'Vaca 10', brinco: '132' },
+    { id: '11', nome: 'Vaca 11', brinco: '133' },
+    { id: '12', nome: 'Vaca 12', brinco: '134' },
   ]);
   const [filtro, setFiltro] = useState('');
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false); // Estado para controlar a visibilidade do DatePicker
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const incrementarData = (dias) => {
     const novaData = new Date(data);
@@ -24,17 +34,14 @@ const ControleProducaoScreen = () => {
     return data.toLocaleDateString('pt-BR', opcoes);
   };
 
-  // Função para abrir o DatePicker
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
 
-  // Função para fechar o DatePicker
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
   };
 
-  // Função para tratar a data selecionada
   const handleConfirm = (date) => {
     setData(date);
     hideDatePicker();
@@ -58,13 +65,12 @@ const ControleProducaoScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.dataContainer}>
         <TouchableOpacity onPress={() => incrementarData(-1)}>
           <Text style={styles.dataBotao}>{'<'}</Text>
         </TouchableOpacity>
         
-        {/* Ao clicar na data, o DatePicker será aberto */}
         <TouchableOpacity onPress={showDatePicker}>
           <Text style={styles.dataTexto}>{formatarData(data)}</Text>
         </TouchableOpacity>
@@ -79,7 +85,7 @@ const ControleProducaoScreen = () => {
         mode="date"
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
-        locale="pt-BR" // Definindo o idioma do calendário para português
+        locale="pt-BR"
       />
 
       <View style={styles.totalContainer}>
@@ -97,7 +103,6 @@ const ControleProducaoScreen = () => {
 
       {modoTirada === 'vaca' && (
         <View style={styles.secaoContainer}>
-          {/* Campo de filtro com ícone */}
           <View style={styles.filtroContainer}>
             <Ionicons name="search" size={20} color="#003AAA" style={styles.filtroIcono} />
             <TextInput
@@ -131,7 +136,9 @@ const ControleProducaoScreen = () => {
           </View>
         </View>
       )}
-    </View>
+
+      <View style={styles.espacoFinal} />
+    </ScrollView>
   );
 };
 
@@ -208,48 +215,16 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 5,
   },
   secaoTitulo: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#003AAA',
     marginBottom: 10,
-    textAlign: 'center',
-  },
-  filtroContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#003AAA',
-    borderRadius: 5,
-    padding: 5,
-    marginBottom: 10,
-  },
-  filtroIcono: {
-    marginRight: 10,
-  },
-  filtroInput: {
-    flex: 1,
-    padding: 5,
-    fontSize: 16,
-    color: '#003AAA',
   },
   vacaContainer: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#ffffff',
-    marginVertical: 5,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+    marginVertical: 10,
   },
   vacaNome: {
     fontSize: 18,
@@ -264,15 +239,32 @@ const styles = StyleSheet.create({
   registrarBotao: {
     backgroundColor: '#003AAA',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     flex: 1,
     marginHorizontal: 5,
-    alignItems: 'center',
   },
   registrarTexto: {
     color: '#ffffff',
+    textAlign: 'center',
     fontWeight: 'bold',
+  },
+  filtroContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  filtroIcono: {
+    marginRight: 10,
+  },
+  filtroInput: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#003AAA',
+    flex: 1,
+    paddingVertical: 5,
+  },
+  espacoFinal: {
+    height: 50,
   },
 });
 
-export default ControleProducaoScreen;
+export default RegistrarTirada;
