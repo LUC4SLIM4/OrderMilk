@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import {View,ScrollView,StyleSheet,TouchableOpacity,Text,Dimensions,} from "react-native";
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Dimensions,
+} from "react-native";
+import { ref, set, runTransaction } from 'firebase/database';
+import { database } from '../config/firebaseConfig';
 import CustomInput from "../components/CadastrarAnimal/CustomInput";
 import SelectBox from "../components/CadastrarAnimal/SelectBox";
 import SubmitButton from "../components/CadastrarAnimal/SubmitButton";
@@ -8,7 +17,9 @@ import DateSelectorModal from "../modals/CadastrarAnimal/DateSelectorModal";
 import NameInputModal from "../modals/CadastrarAnimal/NameInputModal";
 import MoreItemsModal from "../modals/CadastrarAnimal/MoreItemsModal";
 import useForm from "../hooks/CadastrarAnimal/useForm";
-import { showMessage } from 'react-native-flash-message'; 
+import { showMessage } from 'react-native-flash-message';
+
+const { width } = Dimensions.get('window');
 
 const CadastrarAnimal = () => {
   const [formState, handleChange, resetForm] = useForm({
@@ -54,12 +65,15 @@ const CadastrarAnimal = () => {
     
     for (const field of requiredFields) {
       if (!formState[field]) {
-        showMessage({ message: `O campo ${field} é obrigatório.`, type: "danger" });
+        showMessage({ 
+          message: `O campo ${field} é obrigatório.`,
+          type: "danger",
+          icon: "danger"
+        });
         return false;
       }
     }
-    showMessage({ message: `A vaca ${formState.nomeAnimal} foi cadastrada com sucesso.`, type: "success" });
-    return true
+    return true;
   };
 
   const handleSelect = (value) => {
@@ -90,15 +104,50 @@ const CadastrarAnimal = () => {
     setMoreItemsModalVisible(true);
   };
 
-  const handleSubmit = () => {
+  const getNextAnimalId = async () => {
+    const counterRef = ref(database, 'counters/animalId');
+    const transactionResult = await runTransaction(counterRef, (currentId) => {
+      return (currentId || 0) + 1;
+    });
+    
+    if (transactionResult.committed) {
+      return transactionResult.snapshot.val(); // Aqui você pega o valor do contador atualizado
+    } else {
+      throw new Error('Falha ao obter o próximo ID do animal.');
+    }
+  };
+
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    console.log("Dados do Animal Cadastrado:", formState);
-    console.log("Coberturas:", items.coberturas);
-    console.log("Crias:", items.crias);
-    
-    resetForm();
-    setItems({ coberturas: [], crias: [] });
+    try {
+      const animalId = await getNextAnimalId();
+      const animalData = {
+        id: animalId,
+        ...formState,
+        coberturas: items.coberturas,
+        crias: items.crias,
+      };
+
+      const animalRef = ref(database, `animais/${animalId}`);
+      await set(animalRef, animalData);
+
+      showMessage({ 
+        message: `A vaca ${formState.nomeAnimal} foi cadastrada com sucesso.`,
+        description: `ID: ${animalId}`,
+        type: "success",
+        icon: "success"
+      });
+      resetForm();
+      setItems({ coberturas: [], crias: [] });
+    } catch (error) {
+      console.error("Erro ao cadastrar animal:", error);
+      showMessage({ 
+        message: `Erro ao cadastrar o animal: ${error.message}`,
+        type: "danger",
+        icon: "danger"
+      });
+    }
   };
 
   const handleItemEdit = (index, newValue) => {
@@ -121,121 +170,124 @@ const CadastrarAnimal = () => {
   const renderItems = (field) => {
     return items[field].slice(0, 3).map((item, index) => (
       <View key={index} style={styles.itemBox}>
-        <Text>{item}</Text>
+        <Text style={styles.itemText}>{item}</Text>
       </View>
     ));
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.row}>
-        <View style={styles.column}>
-          <Text style={styles.dateButtonText}>Data de Nascimento</Text>
-          <TouchableOpacity
-            style={styles.dateButton}
-            onPress={() => setDateModalVisible(true)}
-          >
-            <Text style={styles.dateText}>
-              {formState.dataNascimento || "Toque Para Definir"}
-            </Text>
-          </TouchableOpacity>
-          <SelectBox
-            label="Gênero Bovino"
-            value={formState.genero}
-            onPress={() => openModal("genero")}
-          />
-          <CustomInput
-            label="Nome do Animal"
-            value={formState.nomeAnimal}
-            onChangeText={(text) => handleChange("nomeAnimal", text)}
-            placeholder="Nome do Animal"
-          />
-          <SelectBox
-            label="Raça"
-            value={formState.raca}
-            onPress={() => openModal("raca")}
-          />
-          <CustomInput
-            label="Brinco do Pai"
-            value={formState.pai}
-            onChangeText={(text) => handleChange("pai", text)}
-            placeholder="Brinco do Pai"
-            keyboardType="numeric"
-          />
-          <Text style={styles.sectionLabel}>Coberturas</Text>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => {
-              setCurrentField('coberturas');
-              setNameInputModalVisible(true);
-            }}
-          >
-            <Text style={styles.addButtonText}>Adicionar Cobertura</Text>
-          </TouchableOpacity>
-          {renderItems('coberturas')}
-          {items.coberturas.length > 0 && (
+      <View style={styles.content}>
+        <Text style={styles.title}>Cadastro de Animal</Text>
+        <View style={styles.row}>
+          <View style={styles.column}>
+            <Text style={styles.label}>Data de Nascimento</Text>
             <TouchableOpacity
-              style={styles.moreButton}
-              onPress={() => handleMoreItemsModal('coberturas')}
+              style={styles.dateButton}
+              onPress={() => setDateModalVisible(true)}
             >
-              <Text style={styles.moreButtonText}>Mais</Text>
+              <Text style={styles.dateText}>
+                {formState.dataNascimento || "Toque Para Definir"}
+              </Text>
             </TouchableOpacity>
-          )}
-        </View>
-        <View style={styles.column}>
-          <CustomInput
-            label="Brinco do Animal"
-            value={formState.brinco}
-            onChangeText={(text) => handleChange("brinco", text)}
-            placeholder="Brinco do Animal"
-            keyboardType="numeric"
-          />
-          <SelectBox
-            label="Cor"
-            value={formState.cor}
-            onPress={() => openModal("cor")}
-          />
-          <CustomInput
-            label="Brinco da Mãe"
-            value={formState.mae}
-            onChangeText={(text) => handleChange("mae", text)}
-            placeholder="Brinco da Mãe"
-            keyboardType="numeric"
-          />
-          <SelectBox
-            label="Momento Reprodutivo"
-            value={formState.momentoReprodutivo}
-            onPress={() => openModal("momentoReprodutivo")}
-          />
-          <CustomInput
-            label="Peso"
-            value={formState.peso}
-            onChangeText={(text) => handleChange("peso", text)}
-            placeholder="Peso"
-            keyboardType="numeric"
-          />
-          <Text style={styles.sectionLabel}>Crias</Text>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => {
-              setCurrentField('crias');
-              setNameInputModalVisible(true);
-            }}
-          >
-            <Text style={styles.addButtonText}>Adicionar Cria</Text>
-          </TouchableOpacity>
-          {renderItems('crias')}
-          {items.crias.length > 0 && (
+            <SelectBox
+              label="Gênero Bovino"
+              value={formState.genero}
+              onPress={() => openModal("genero")}
+            />
+            <CustomInput
+              label="Nome do Animal"
+              value={formState.nomeAnimal}
+              onChangeText={(text) => handleChange("nomeAnimal", text)}
+              placeholder="Nome do Animal"
+            />
+            <SelectBox
+              label="Raça"
+              value={formState.raca}
+              onPress={() => openModal("raca")}
+            />
+            <CustomInput
+              label="Brinco do Pai"
+              value={formState.pai}
+              onChangeText={(text) => handleChange("pai", text)}
+              placeholder="Brinco do Pai"
+              keyboardType="numeric"
+            />
+            <Text style={styles.sectionLabel}>Coberturas</Text>
             <TouchableOpacity
-              style={styles.moreButton}
-              onPress={() => handleMoreItemsModal('crias')}
+              style={styles.addButton}
+              onPress={() => {
+                setCurrentField('coberturas');
+                setNameInputModalVisible(true);
+              }}
             >
-              <Text style={styles.moreButtonText}>Mais</Text>
+              <Text style={styles.addButtonText}>Adicionar Cobertura</Text>
             </TouchableOpacity>
-          )}
+            {renderItems('coberturas')}
+            {items.coberturas.length > 0 && (
+              <TouchableOpacity
+                style={styles.moreButton}
+                onPress={() => handleMoreItemsModal('coberturas')}
+              >
+                <Text style={styles.moreButtonText}>Mais</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.column}>
+            <CustomInput
+              label="Brinco do Animal"
+              value={formState.brinco}
+              onChangeText={(text) => handleChange("brinco", text)}
+              placeholder="Brinco do Animal"
+              keyboardType="numeric"
+            />
+            <SelectBox
+              label="Cor"
+              value={formState.cor}
+              onPress={() => openModal("cor")}
+            />
+            <CustomInput
+              label="Brinco da Mãe"
+              value={formState.mae}
+              onChangeText={(text) => handleChange("mae", text)}
+              placeholder="Brinco da Mãe"
+              keyboardType="numeric"
+            />
+            <SelectBox
+              label="Momento Reprodutivo"
+              value={formState.momentoReprodutivo}
+              onPress={() => openModal("momentoReprodutivo")}
+            />
+            <CustomInput
+              label="Peso"
+              value={formState.peso}
+              onChangeText={(text) => handleChange("peso", text)}
+              placeholder="Peso"
+              keyboardType="numeric"
+            />
+            <Text style={styles.sectionLabel}>Crias</Text>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => {
+                setCurrentField('crias');
+                setNameInputModalVisible(true);
+              }}
+            >
+              <Text style={styles.addButtonText}>Adicionar Cria</Text>
+            </TouchableOpacity>
+            {renderItems('crias')}
+            {items.crias.length > 0 && (
+              <TouchableOpacity
+                style={styles.moreButton}
+                onPress={() => handleMoreItemsModal('crias')}
+              >
+                <Text style={styles.moreButtonText}>Mais</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
+        <SubmitButton onPress={handleSubmit} />
       </View>
-      <SubmitButton onPress={handleSubmit} />
       <ModalSelector
         visible={modalVisible}
         options={options[currentField]}
@@ -322,7 +374,6 @@ const styles = StyleSheet.create({
     padding: '5%',
     borderRadius: 5,
     alignItems: "center",
-
   },
   addButtonText: {
     color: "#FFF",
@@ -340,5 +391,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
 
 export default CadastrarAnimal;
