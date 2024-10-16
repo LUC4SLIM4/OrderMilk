@@ -51,21 +51,21 @@ const CadastrarAnimal = () => {
 
   const validateForm = () => {
     const requiredFields = [
-      'brinco', 
-      'nomeAnimal', 
-      'raca', 
-      'cor', 
-      'pai', 
-      'mae', 
-      'dataNascimento', 
-      'peso', 
-      'genero', 
+      'brinco',
+      'nomeAnimal',
+      'raca',
+      'cor',
+      'pai',
+      'mae',
+      'dataNascimento',
+      'peso',
+      'genero',
       'momentoReprodutivo'
     ];
-    
+
     for (const field of requiredFields) {
       if (!formState[field]) {
-        showMessage({ 
+        showMessage({
           message: `O campo ${field} é obrigatório.`,
           type: "danger",
           icon: "danger"
@@ -109,7 +109,7 @@ const CadastrarAnimal = () => {
     const transactionResult = await runTransaction(counterRef, (currentId) => {
       return (currentId || 0) + 1;
     });
-    
+
     if (transactionResult.committed) {
       return transactionResult.snapshot.val(); // Aqui você pega o valor do contador atualizado
     } else {
@@ -132,7 +132,7 @@ const CadastrarAnimal = () => {
       const animalRef = ref(database, `animais/${animalId}`);
       await set(animalRef, animalData);
 
-      showMessage({ 
+      showMessage({
         message: `A vaca ${formState.nomeAnimal} foi cadastrada com sucesso.`,
         description: `ID: ${animalId}`,
         type: "success",
@@ -142,7 +142,7 @@ const CadastrarAnimal = () => {
       setItems({ coberturas: [], crias: [] });
     } catch (error) {
       console.error("Erro ao cadastrar animal:", error);
-      showMessage({ 
+      showMessage({
         message: `Erro ao cadastrar o animal: ${error.message}`,
         type: "danger",
         icon: "danger"
@@ -178,7 +178,6 @@ const CadastrarAnimal = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Cadastro de Animal</Text>
         <View style={styles.row}>
           <View style={styles.column}>
             <Text style={styles.label}>Data de Nascimento</Text>
@@ -307,9 +306,9 @@ const CadastrarAnimal = () => {
       <MoreItemsModal
         visible={moreItemsModalVisible}
         items={items[currentField]}
+        onItemEdit={handleItemEdit}
+        onItemRemove={handleItemRemove}
         onClose={() => setMoreItemsModalVisible(false)}
-        onEdit={handleItemEdit}
-        onRemove={handleItemRemove}
       />
     </ScrollView>
   );
@@ -358,6 +357,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
     marginTop: 30,
+    color: '#003AAA',
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
     color: '#003AAA',
     textAlign: 'center',
   },
