@@ -24,7 +24,7 @@ const { width } = Dimensions.get('window');
 const CadastrarAnimal = () => {
   const [formState, handleChange, resetForm] = useForm({
     brinco: "",
-    nomeAnimal: "",
+    nomeAnimal: "", 
     raca: "",
     cor: "",
     pai: "",
@@ -111,7 +111,7 @@ const CadastrarAnimal = () => {
     });
     
     if (transactionResult.committed) {
-      return transactionResult.snapshot.val(); // Aqui você pega o valor do contador atualizado
+      return transactionResult.snapshot.val(); // ID atualizado
     } else {
       throw new Error('Falha ao obter o próximo ID do animal.');
     }
@@ -320,7 +320,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     backgroundColor: "#FFF",
-    justifyContent: "flex-start",
   },
   row: {
     marginTop: 50,
@@ -341,13 +340,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 20,
-  },
-  dateButtonText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 4,
-    color: '#003AAA',
-    textAlign: 'center',
   },
   dateText: {
     fontSize: 16,
@@ -391,6 +383,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
 
 export default CadastrarAnimal;
