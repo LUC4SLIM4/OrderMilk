@@ -40,6 +40,7 @@ const InicioScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: 50,
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#003AAA',
     padding: 50,
-    borderRadius: 5,
+    borderRadius: 15,
     width: '48%',
     marginBottom: 10,
   },

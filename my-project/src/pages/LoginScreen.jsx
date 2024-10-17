@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Text, TouchableOpacity, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import app from '../config/firebaseConfig';
-import Input from '../components/LoginScreen/Input';
-import Button from '../components/LoginScreen/Button';
-import Link from '../components/LoginScreen/Link';
-import { showMessage } from 'react-native-flash-message'; 
+import { showMessage } from 'react-native-flash-message';
 
 const LoginScreen = () => {
-  const [credenciais, setCredenciais] = useState({ username: '', password: '' });
+  const [credentials, setCredentials] = useState({ username: '', password: '' });
   const navigation = useNavigation();
   const auth = getAuth(app);
 
   const handleLogin = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, credenciais.username, credenciais.password);
+      const userCredential = await signInWithEmailAndPassword(auth, credentials.username, credentials.password);
       await AsyncStorage.setItem('user', JSON.stringify(userCredential.user));
       navigation.reset({
         index: 0,
@@ -34,33 +31,43 @@ const LoginScreen = () => {
       }
       showMessage({
         message,
-        type: 'danger', 
+        type: 'danger',
         duration: 3000,
       });
     }
   };
 
   const inputsConfig = [
-    { label: 'Usuário', type: 'email', campo: 'username' },
-    { label: 'Senha', type: 'password', campo: 'password' },
+    { label: 'Usuário', type: 'email', field: 'username' },
+    { label: 'Senha', type: 'password', field: 'password' },
   ];
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Image style={styles.avatar} source={require("../assets/images/logo2.png")} />
-        {inputsConfig.map((elm, index) => (
-          <Input
-            key={index}
-            label={elm.label}
-            type={elm.type}
-            onChangeText={(text) => setCredenciais({ ...credenciais, [elm.campo]: text })}
-          />
+        <Image style={styles.logo} source={require("../assets/images/logo2.png")} />
+        {inputsConfig.map((input, index) => (
+          <View key={index} style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>{input.label}</Text>
+            <TextInput
+              style={styles.input}
+              secureTextEntry={input.type === 'password'}
+              onChangeText={(text) => setCredentials({ ...credentials, [input.field]: text })}
+              placeholder={input.label}
+              placeholderTextColor="#999"
+            />
+          </View>
         ))}
-        <Button onPress={handleLogin}>Entrar</Button>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Entrar</Text>
+        </TouchableOpacity>
         <View style={styles.links}>
-          <Link onPress={() => navigation.navigate('SignUp')}>Cadastre-se</Link>
-          <Link onPress={() => navigation.navigate('ForgotPassword')}>Esqueceu a Senha?</Link>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Text style={styles.linkText}>Cadastre-se</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+            <Text style={styles.linkText}>Esqueceu a Senha?</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -72,28 +79,73 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#f0f2f5',
   },
   content: {
-    padding: 20,
+    padding: 30,
     alignItems: 'center',
-    width: '100%',
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 40,
+  logo: {
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    marginBottom: 30,
+  },
+  inputContainer: {
+    width: '100%',
     marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    fontSize: 16,
+    color: '#333',
+  },
+  loginButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#003AAA',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  loginButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   links: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     width: '100%',
+    marginTop: 20,
   },
   linkText: {
-    flex: 1,
-    textAlign: 'center',
-    maxWidth: 120,
+    color: '#003AAA',
+    fontSize: 16,
   },
 });
 
