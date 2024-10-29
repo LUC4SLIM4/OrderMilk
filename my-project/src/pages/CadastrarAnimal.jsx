@@ -29,7 +29,7 @@ const CadastrarAnimal = () => {
     cor: "",
     pai: "",
     mae: "",
-    dataNascimento: "",
+    dataNascimento: "", 
     peso: "",
     genero: "",
     momentoReprodutivo: ""

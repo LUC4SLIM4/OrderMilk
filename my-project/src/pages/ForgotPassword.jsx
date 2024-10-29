@@ -15,7 +15,7 @@ const ForgotPassword = () => {
     const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     const ERROR_MESSAGES = {
-        emptyEmail: 'Por favor, insira um email.',
+        emptyEmail: 'Por favor, insira um email.', 
         invalidEmail: 'Por favor, insira um email válido.',
         invalidFirebaseEmail: 'Este email é inválido.',
         userNotFound: 'Email não encontrado no Firebase Auth.',

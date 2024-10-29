@@ -1,25 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Modal, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { database } from '../config/firebaseConfig';
+import { ref, onValue, set } from 'firebase/database';
 
 export default function RegistrarTirada() {
   const [data, setData] = useState(new Date());
   const [modoTirada, setModoTirada] = useState(null);
-  const [vacas, setVacas] = useState([
-    { id: '1', nome: 'Vaca 1', brinco: '123' },
-    { id: '2', nome: 'Vaca 2', brinco: '124' },
-    { id: '3', nome: 'Vaca 3', brinco: '125' },
-    { id: '4', nome: 'Vaca 4', brinco: '126' },
-    { id: '5', nome: 'Vaca 5', brinco: '127' },
-    { id: '6', nome: 'Vaca 6', brinco: '128' },
-    { id: '7', nome: 'Vaca 7', brinco: '129' },
-    { id: '8', nome: 'Vaca 8', brinco: '130' },
-    { id: '9', nome: 'Vaca 9', brinco: '131' },
-    { id: '10', nome: 'Vaca 10', brinco: '132' },
-    { id: '11', nome: 'Vaca 11', brinco: '133' },
-    { id: '12', nome: 'Vaca 12', brinco: '134' },
-  ]);
+  const [vacas, setVacas] = useState([]);
   const [filtro, setFiltro] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isPopupVisible, setPopupVisible] = useState(false);
@@ -29,6 +18,18 @@ export default function RegistrarTirada() {
   const [bezerro, setBezerro] = useState('');
   const [descarte, setDescarte] = useState('');
 
+  useEffect(() => {
+    const animaisRef = ref(database, 'animais');
+    onValue(animaisRef, (snapshot) => {
+      const data = snapshot.val();
+      const animaisList = data ? Object.keys(data).map(key => ({
+        id: key,
+        ...data[key]
+      })) : [];
+      setVacas(animaisList);
+    });
+  }, []);
+
   const incrementarData = (dias) => {
     const novaData = new Date(data);
     novaData.setDate(novaData.getDate() + dias);
@@ -37,6 +38,10 @@ export default function RegistrarTirada() {
 
   const formatarData = (data) => {
     return data.toLocaleDateString('pt-BR');
+  };
+
+  const formatarDataParaChave = (data) => {
+    return data.toISOString().split('T')[0].replace(/-/g, '');
   };
 
   const showDatePicker = () => {
@@ -65,19 +70,6 @@ export default function RegistrarTirada() {
     setDescarte('');
   };
 
-  const handleSubmit = () => {
-    console.log('Submitting data:', {
-      date: formatarData(data),
-      cow: selectedCow,
-      session: milkingSession,
-      totalMilk,
-      bezerro,
-      descarte,
-      finalTotal: calculateFinalTotal()
-    });
-    hidePopup();
-  };
-
   const calculateFinalTotal = () => {
     const total = parseFloat(totalMilk) || 0;
     const bezerroValue = parseFloat(bezerro) || 0;
@@ -85,9 +77,41 @@ export default function RegistrarTirada() {
     return (total - bezerroValue - descarteValue).toFixed(2);
   };
 
+  const handleSubmit = () => {
+    const ordenhaRef = ref(database, 'ordenhas');
+    const dataFormatada = formatarDataParaChave(data);
+    const brinco = selectedCow ? selectedCow.brinco : 'todas';
+    const chave = `${dataFormatada}_${milkingSession}_${brinco}`;
+
+    const ordenhaData = {
+      data: formatarData(data),
+      ordenha: `${milkingSession}°`,
+      totalProduzido: parseFloat(totalMilk) || 0,
+      bezerro: parseFloat(bezerro) || 0,
+      descarte: parseFloat(descarte) || 0,
+      totalFinal: parseFloat(calculateFinalTotal())
+    };
+
+    if (modoTirada === 'vaca' && selectedCow) {
+      ordenhaData.idAnimal = selectedCow.id;
+      ordenhaData.nomeAnimal = selectedCow.nomeAnimal;
+      ordenhaData.brinco = selectedCow.brinco;
+    }
+
+    set(ref(database, `ordenhas/${chave}`), ordenhaData)
+      .then(() => {
+        Alert.alert('Sucesso', 'Ordenha registrada com sucesso!');
+        hidePopup();
+      })
+      .catch((error) => {
+        console.error('Erro ao salvar ordenha:', error);
+        Alert.alert('Erro', 'Não foi possível salvar a ordenha. Tente novamente.');
+      });
+  };
+
   const renderizarVaca = ({ item }) => (
     <View style={styles.vacaContainer}>
-      <Text style={styles.vacaNome}>{item.nome} - Brinco: {item.brinco}</Text>
+      <Text style={styles.vacaNome}>{item.nomeAnimal} - Brinco: {item.brinco}</Text>
       <View style={styles.botoesTirada}>
         {[1, 2, 3].map((session) => (
           <TouchableOpacity 
@@ -212,7 +236,7 @@ export default function RegistrarTirada() {
             <Text style={styles.modalTitle}>Registrar Ordenha</Text>
             <Text style={styles.modalText}>Data: {formatarData(data)}</Text>
             {selectedCow && modoTirada === 'vaca' && (
-              <Text style={styles.modalText}>Vaca: {selectedCow.nome} (Brinco: {selectedCow.brinco})</Text>
+              <Text style={styles.modalText}>Vaca: {selectedCow.nomeAnimal} (Brinco: {selectedCow.brinco})</Text>
             )}
             <Text style={styles.modalText}>{milkingSession}° Ordenha</Text>
 
@@ -390,6 +414,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     shadowColor: '#000',
+    
     shadowOffset: {
       width: 0,
       height: 2,
@@ -462,5 +487,12 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: '#003AAA',
     fontSize: 16,
+  },
+  modalFinalTotal: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#003AAA',
+    marginTop: 10,
+    marginBottom: 20,
   },
 });
