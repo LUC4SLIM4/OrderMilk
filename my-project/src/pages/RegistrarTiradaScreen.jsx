@@ -3,7 +3,7 @@ import { View, Text, FlatList, TextInput, TouchableOpacity, StyleSheet, Modal, A
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { database } from '../config/firebaseConfig';
-import { ref, onValue, set } from 'firebase/database';
+import { ref, onValue, set, query, orderByChild, equalTo } from 'firebase/database';
 
 export default function RegistrarTirada() {
   const [data, setData] = useState(new Date());
@@ -17,6 +17,7 @@ export default function RegistrarTirada() {
   const [totalMilk, setTotalMilk] = useState('');
   const [bezerro, setBezerro] = useState('');
   const [descarte, setDescarte] = useState('');
+  const [totalDiario, setTotalDiario] = useState(0);
 
   useEffect(() => {
     const animaisRef = ref(database, 'animais');
@@ -29,6 +30,37 @@ export default function RegistrarTirada() {
       setVacas(animaisList);
     });
   }, []);
+
+  useEffect(() => {
+    fetchTotalDiario();
+  }, [data]);
+
+  const fetchTotalDiario = () => {
+    const dataFormatada = formatarDataParaChave(data);
+    const ordenhasRef = ref(database, 'ordenhas');
+    const ordenhasQuery = query(ordenhasRef, orderByChild('data'), equalTo(formatarData(data)));
+
+    onValue(ordenhasQuery, (snapshot) => {
+      const ordenhas = snapshot.val();
+      if (ordenhas) {
+        let total = 0;
+        let todasDeUmaVez = false;
+
+        Object.values(ordenhas).forEach((ordenha: any ) => {
+          if (ordenha.brinco === 'todas') {
+            todasDeUmaVez = true;
+            total += ordenha.totalFinal;
+          } else if (!todasDeUmaVez) {
+            total += ordenha.totalFinal;
+          }
+        });
+
+        setTotalDiario(total);
+      } else {
+        setTotalDiario(0);
+      }
+    });
+  };
 
   const incrementarData = (dias) => {
     const novaData = new Date(data);
@@ -102,6 +134,7 @@ export default function RegistrarTirada() {
       .then(() => {
         Alert.alert('Sucesso', 'Ordenha registrada com sucesso!');
         hidePopup();
+        fetchTotalDiario();
       })
       .catch((error) => {
         console.error('Erro ao salvar ordenha:', error);
@@ -155,7 +188,7 @@ export default function RegistrarTirada() {
             />
 
             <View style={styles.totalContainer}>
-              <Text style={styles.totalTexto}>Total de leite: 0 Litros</Text>
+              <Text style={styles.totalTexto}>Total de leite: {totalDiario.toFixed(2)} Litros</Text>
             </View>
 
             <View style={styles.modoContainer}>
@@ -365,7 +398,7 @@ const styles = StyleSheet.create({
   vacaContainer: {
     marginVertical: 10,
     backgroundColor: '#ffffff',
-    padding: 15,
+    padding:  15,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: {
@@ -414,7 +447,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     shadowColor: '#000',
-    
     shadowOffset: {
       width: 0,
       height: 2,
