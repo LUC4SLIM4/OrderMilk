@@ -51,7 +51,7 @@ export default function RegistrarTirada() {
             todasDeUmaVez = true;
             total += ordenha.totalFinal;
           } else if (!todasDeUmaVez) {
-            total += ordenha.totalFinal;
+            total += ordenha.totalFinal; 
           }
         });
 
