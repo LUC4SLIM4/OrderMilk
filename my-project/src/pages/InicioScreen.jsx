@@ -1,19 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { BarChart } from 'react-native-chart-kit';
 import Icon from 'react-native-vector-icons/Feather';
-import useFirebaseData from '../hooks/InicioScreen/useFirebaseData'; // Importe o hook personalizado
 
 const InicioScreen = () => {
   const navigation = useNavigation();
-  const { chartData, loading, error } = useFirebaseData(); // Use o hook personalizado
+
+  // Estado para os dados do gráfico
+  const [chartData, setChartData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Simula a obtenção de dados do Firebase
+  useEffect(() => {
+    // Aqui você pode simular uma chamada a uma API ou ao Firebase
+    const fetchData = async () => {
+      try {
+        // Simulando dados de produção semanal
+        const simulatedData = {
+          labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'],
+          datasets: [
+            {
+              data: [30, 45, 28, 80, 99, 43, 50], // Valores fictícios
+              color: (opacity = 1) => `rgba(0, 58, 170, ${opacity})`, // Cor das barras
+              strokeWidth: 2, // Largura da linha
+            },
+          ],
+        };
+        setChartData(simulatedData);
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const buttons = [
     { title: 'Cadastrar Animal', icon: 'plus', onPress: () => navigation.navigate('CadastrarAnimal') },
     { title: 'Rebanho', icon: 'users', onPress: () => navigation.navigate('RebanhoScreen') },
     { title: 'Manejo Sanitário', icon: 'heart', onPress: () => navigation.navigate('ManejoSanitario') },
-    { title: 'Outros', icon: 'settings', onPress: () => console.log('Outros') },
+    { title: 'Producao', icon: 'settings', onPress: () => navigation.navigate('Producao') },
   ];
 
   const renderChart = () => {
@@ -32,7 +62,7 @@ const InicioScreen = () => {
     return (
       <BarChart
         data={chartData}
-        width={Dimensions.get('window').width - 32}
+        width={Dimensions.get('window').width - 70}
         height={250}
         yAxisLabel=""
         chartConfig={{

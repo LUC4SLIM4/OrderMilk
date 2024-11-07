@@ -6,6 +6,7 @@ import RebanhoScreen from "./src/pages/RebanhoScreen";
 import GestaoNutritiva from "./src/pages/GestaoNutritiva";
 import ManejoSanitario from "./src/pages/ManejoSanitario";
 import RegistrarTiradaScreen from "./src/pages/RegistrarTiradaScreen";
+import Producao from "./src/pages/Producao"
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -82,6 +83,18 @@ const drawerItems = [
     name: "list",
   },
   {
+    label: "Registrar Tirada",
+    screen: "RegistrarTiradaScreen",
+    icon: MaterialIcons,
+    name: "healing",
+  },
+  {
+    label: "Produção",
+    screen: "Producao",
+    icon: MaterialIcons,
+    name: "healing",
+  },
+  {
     label: "Gestão Nutritiva",
     screen: "GestaoNutritiva",
     icon: Ionicons,
@@ -126,6 +139,16 @@ const AppSidebar = () => {
         options={{ title: "Gestão de Rebanho", ...commonHeaderOptions }}
       />
       <Drawer.Screen
+        name="RegistrarTiradaScreen"
+        component={RegistrarTiradaScreen}
+        options={{ title: "Registrar Tirada", ...commonHeaderOptions }}
+      />
+      <Drawer.Screen
+        name="Producao"
+        component={Producao}
+        options={{ title: "Produção", ...commonHeaderOptions }}
+      />
+      <Drawer.Screen
         name="GestaoNutritiva"
         component={GestaoNutritiva}
         options={{ title: "Gestão Nutricional", ...commonHeaderOptions }}
@@ -134,11 +157,6 @@ const AppSidebar = () => {
         name="ManejoSanitario"
         component={ManejoSanitario}
         options={{ title: "Manejo Sanitário", ...commonHeaderOptions }}
-      />
-      <Drawer.Screen
-        name="RegistrarTiradaScreen"
-        component={RegistrarTiradaScreen}
-        options={{ title: "Registrar Tirada", ...commonHeaderOptions }}
       />
     </Drawer.Navigator>
   );
