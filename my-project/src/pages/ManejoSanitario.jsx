@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     backgroundColor: '#ccc',
-    padding: 12,
+    padding: 12, 
     borderRadius: 8, 
     alignItems: 'center',
     marginTop: 8,
