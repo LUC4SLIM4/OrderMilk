@@ -8,19 +8,24 @@ import {
   ScrollView,
   TextInput,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import { database } from '../config/firebaseConfig';
-import { ref, onValue, push, set } from 'firebase/database';
+import { ref, onValue, push, set, remove } from 'firebase/database';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Trash2 } from 'lucide-react-native';
 
 export default function ManejoSanitario() {
   const [animals, setAnimals] = useState([]);
   const [selectedAnimal, setSelectedAnimal] = useState(null);
   const [diseases, setDiseases] = useState([]);
+  const [predefinedDiseases, setPredefinedDiseases] = useState([]);
   const [treatments, setTreatments] = useState([]);
   const [showAnimalModal, setShowAnimalModal] = useState(false);
   const [showDiseaseModal, setShowDiseaseModal] = useState(false);
+  const [showDiseaseSelectionModal, setShowDiseaseSelectionModal] = useState(false);
   const [showTreatmentModal, setShowTreatmentModal] = useState(false);
-  const [newDisease, setNewDisease] = useState({ description: '', date: '' });
+  const [newDisease, setNewDisease] = useState({ name: '', description: '', date: new Date() });
   const [newTreatment, setNewTreatment] = useState({
     disease: '',
     medication: '',
@@ -28,10 +33,12 @@ export default function ManejoSanitario() {
     applications: '',
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [diseaseSearchQuery, setDiseaseSearchQuery] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
     const animaisRef = ref(database, 'animais');
-    const unsubscribe = onValue(animaisRef, (snapshot) => {
+    const unsubscribeAnimais = onValue(animaisRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const animalsList = Object.entries(data).map(([id, animal]) => ({
@@ -42,35 +49,121 @@ export default function ManejoSanitario() {
       }
     });
 
-    return () => unsubscribe();
+    const diseasesRef = ref(database, 'doenças');
+    const unsubscribeDiseases = onValue(diseasesRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const diseasesList = Object.values(data);
+        setPredefinedDiseases(diseasesList);
+      }
+    });
+
+    return () => {
+      unsubscribeAnimais();
+      unsubscribeDiseases();
+    };
   }, []);
+
+  useEffect(() => {
+    if (selectedAnimal) {
+      const diseasesRef = ref(database, `diseases/${selectedAnimal.id}`);
+      const unsubscribe = onValue(diseasesRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          const diseasesList = Object.entries(data).map(([id, disease]) => ({
+            id,
+            ...disease,
+          }));
+          setDiseases(diseasesList);
+        } else {
+          setDiseases([]);
+        }
+      });
+
+      return () => unsubscribe();
+    } else {
+      setDiseases([]);
+    }
+  }, [selectedAnimal]);
 
   const filteredAnimals = useMemo(() => {
     return animals.filter((animal) => {
       const searchLower = searchQuery.toLowerCase();
       return (
         animal.nomeAnimal.toLowerCase().includes(searchLower) ||
-        animal.brinco.toLowerCase().includes(searchLower) ||
-        animal.momentoReprodutivo.toLowerCase().includes(searchLower)
+        animal.brinco.toLowerCase().includes(searchLower)
       );
     });
   }, [animals, searchQuery]);
 
+  const filteredDiseases = useMemo(() => {
+    return predefinedDiseases.filter((disease) => {
+      const searchLower = diseaseSearchQuery.toLowerCase();
+      return disease.toLowerCase().includes(searchLower);
+    });
+  }, [predefinedDiseases, diseaseSearchQuery]);
+
   const handleSaveDisease = () => {
-    if (selectedAnimal && newDisease.description && newDisease.date) {
+    if (selectedAnimal && newDisease.name && newDisease.description) {
       const diseaseRef = ref(database, `diseases/${selectedAnimal.id}`);
-      push(diseaseRef, newDisease);
-      setShowDiseaseModal(false);
-      setNewDisease({ description: '', date: '' });
+      const newDiseaseWithId = {
+        ...newDisease,
+        id: Date.now().toString(),
+        date: newDisease.date.toISOString(),
+      };
+      push(diseaseRef, newDiseaseWithId).then(() => {
+        setDiseases(prevDiseases => [...prevDiseases, newDiseaseWithId]);
+        setShowDiseaseModal(false);
+        setNewDisease({ name: '', description: '', date: new Date() });
+      }).catch(error => {
+        console.error("Error saving disease:", error);
+        Alert.alert("Erro", "Não foi possível salvar a doença. Tente novamente.");
+      });
+    } else {
+      Alert.alert("Erro", "Por favor, preencha todos os campos.");
     }
   };
 
+  const handleDeleteDisease = (diseaseId) => {
+    Alert.alert(
+      "Confirmar exclusão",
+      "Tem certeza que deseja excluir esta doença?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        { 
+          text: "OK", 
+          onPress: () => {
+            if (selectedAnimal) {
+              const diseaseRef = ref(database, `diseases/${selectedAnimal.id}/${diseaseId}`);
+              remove(diseaseRef).then(() => {
+                setDiseases(prevDiseases => prevDiseases.filter(disease => disease.id !== diseaseId));
+              }).catch(error => {
+                console.error("Error deleting disease:", error);
+                Alert.alert("Erro", "Não foi possível excluir a doença. Tente novamente.");
+              });
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const handleSaveTreatment = () => {
-    if (selectedAnimal && newTreatment.disease) {
+    if (selectedAnimal && newTreatment.disease && newTreatment.medication && newTreatment.interval && newTreatment.applications) {
       const treatmentRef = ref(database, `treatments/${selectedAnimal.id}`);
-      push(treatmentRef, newTreatment);
-      setShowTreatmentModal(false);
-      setNewTreatment({ disease: '', medication: '', interval: '', applications: '' });
+      push(treatmentRef, newTreatment).then(() => {
+        setTreatments(prevTreatments => [...prevTreatments, newTreatment]);
+        setShowTreatmentModal(false);
+        setNewTreatment({ disease: '', medication: '', interval: '', applications: '' });
+      }).catch(error => {
+        console.error("Error saving treatment:", error);
+        Alert.alert("Erro", "Não foi possível salvar o tratamento. Tente novamente.");
+      });
+    } else {
+      Alert.alert("Erro", "Por favor, preencha todos os campos do tratamento.");
     }
   };
 
@@ -81,8 +174,20 @@ export default function ManejoSanitario() {
         ...selectedAnimal,
         diseases,
         treatments,
+      }).then(() => {
+        Alert.alert("Sucesso", "Alterações salvas com sucesso.");
+      }).catch(error => {
+        console.error("Error saving changes:", error);
+        Alert.alert("Erro", "Não foi possível salvar as alterações. Tente novamente.");
       });
     }
+  };
+
+  const formatDate = (date) => {
+    if (date instanceof Date && !isNaN(date)) {
+      return date.toLocaleDateString('pt-BR');
+    }
+    return 'Data inválida';
   };
 
   return (
@@ -91,8 +196,7 @@ export default function ManejoSanitario() {
         <TouchableOpacity onPress={() => setShowAnimalModal(true)}>
           {selectedAnimal ? (
             <View style={styles.selectedAnimalInfo}>
-              <Text style={styles.selectedAnimalName}>{selectedAnimal.nomeAnimal}</Text>
-              <Text style={styles.selectedAnimalDetails}>Brinco: {selectedAnimal.brinco} | MR: {selectedAnimal.momentoReprodutivo}</Text>
+              <Text style={styles.selectedAnimalName}>{selectedAnimal.nomeAnimal} - Brinco: {selectedAnimal.brinco}</Text>
             </View>
           ) : (
             <Text style={styles.selectAnimalText}>Selecione o Animal</Text>
@@ -108,9 +212,19 @@ export default function ManejoSanitario() {
           <Text style={styles.buttonText}>Registrar Doença</Text>
         </TouchableOpacity>
         <ScrollView style={styles.listContainer}>
-          {diseases.map((disease, index) => (
-            <View key={index} style={styles.listItem}>
-              <Text>{`${disease.description} - ${disease.date}`}</Text>
+          {diseases.map((disease) => (
+            <View key={disease.id} style={styles.listItem}>
+              <View style={styles.listItemContent}>
+                <Text style={styles.listItemTitle}>{disease.name}</Text>
+                <Text>{disease.description}</Text>
+                <Text style={styles.listItemDate}>{formatDate(new Date(disease.date))}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteDisease(disease.id)}
+              >
+                <Trash2 size={24} color="#FF0000" />
+              </TouchableOpacity>
             </View>
           ))}
         </ScrollView>
@@ -155,9 +269,7 @@ export default function ManejoSanitario() {
                     setShowAnimalModal(false);
                   }}
                 >
-                  <Text style={styles.animalName}>{animal.nomeAnimal}</Text>
-                  <Text style={styles.animalDetails}>Brinco: {animal.brinco}</Text>
-                  <Text style={styles.animalDetails}>MR: {animal.momentoReprodutivo}</Text>
+                  <Text style={styles.animalName}>{animal.nomeAnimal} - Brinco: {animal.brinco}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -172,22 +284,74 @@ export default function ManejoSanitario() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Registrar Doença</Text>
+            <View style={styles.card}>
+              <TouchableOpacity onPress={() => setShowDiseaseSelectionModal(true)}>
+                {newDisease.name ? (
+                  <View style={styles.selectedDiseaseInfo}>
+                    <Text style={styles.selectedDiseaseName}>{newDisease.name}</Text>
+                  </View>
+                ) : (
+                  <Text style={styles.selectDiseaseText}>Selecione a Doença</Text>
+                )}
+              </TouchableOpacity>
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Descrição da Doença"
               value={newDisease.description}
               onChangeText={(text) => setNewDisease({ ...newDisease, description: text })}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Data"
-              value={newDisease.date}
-              onChangeText={(text) => setNewDisease({ ...newDisease, date: text })}
-            />
+            <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
+              <Text>{formatDate(newDisease.date)}</Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={newDisease.date}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) {
+                    setNewDisease({ ...newDisease, date: selectedDate });
+                  }
+                }}
+              />
+            )}
             <TouchableOpacity style={styles.button} onPress={handleSaveDisease}>
               <Text style={styles.buttonText}>Salvar</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.closeButton} onPress={() => setShowDiseaseModal(false)}>
+              <Text style={styles.closeButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={showDiseaseSelectionModal} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Selecionar Doença</Text>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Buscar doença"
+              value={diseaseSearchQuery}
+              onChangeText={setDiseaseSearchQuery}
+            />
+            <ScrollView style={styles.diseaseList}>
+              {filteredDiseases.map((disease, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.diseaseItem}
+                  onPress={() => {
+                    setNewDisease({ ...newDisease, name: disease });
+                    setShowDiseaseSelectionModal(false);
+                  }}
+                >
+                  <Text>{disease}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setShowDiseaseSelectionModal(false)}>
               <Text style={styles.closeButtonText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -203,9 +367,9 @@ export default function ManejoSanitario() {
                 <TouchableOpacity
                   key={index}
                   style={styles.diseaseItem}
-                  onPress={() => setNewTreatment({ ...newTreatment, disease: disease.description })}
+                  onPress={() => setNewTreatment({ ...newTreatment, disease: disease.name })}
                 >
-                  <Text>{disease.description}</Text>
+                  <Text>{disease.name}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -270,6 +434,19 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
   },
+  selectedDiseaseInfo: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  selectedDiseaseName: {
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  selectDiseaseText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+  },
   section: {
     marginBottom: 20,
   },
@@ -302,6 +479,24 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  listItemContent: {
+    flex: 1,
+  },
+  listItemTitle: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  listItemDate: {
+    color: '#666',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  deleteButton: {
+    padding: 8,
   },
   saveButton: {
     backgroundColor: '#0047AB',
