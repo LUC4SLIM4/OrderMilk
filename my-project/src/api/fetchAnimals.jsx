@@ -12,6 +12,7 @@ const fetchAnimals = (setAnimais, setLotes) => {
         
         // Filtra apenas os campos brinco, nome e lote
         const animalsArray = Object.values(data).map(animal => ({
+          key: animal.brinco,
           brinco: animal.brinco || 'N/A',
           nome: animal.nomeAnimal || 'N/A',
           lote: animal.momentoReprodutivo || 'N/A',

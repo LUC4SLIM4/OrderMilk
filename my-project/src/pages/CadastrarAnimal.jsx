@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Dimensions,
-} from "react-native";
+import { View, ScrollView, StyleSheet, TouchableOpacity, Text, Dimensions } from "react-native";
 import { ref, set, runTransaction } from 'firebase/database';
 import { database } from '../config/firebaseConfig';
 import CustomInput from "../components/CadastrarAnimal/CustomInput";

@@ -50,7 +50,7 @@ export default function RebanhoScreen({ route, navigation }) {
           <FlatList
             data={animaisFiltrados}
             renderItem={({ item }) => (
-              <AnimalListItem item={item} navigation={navigation} />
+              <AnimalListItem key={animais.id} item={item} navigation={navigation} />
             )}
             keyExtractor={(item) => item.id}
             ListHeaderComponent={ListHeader}
