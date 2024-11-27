@@ -752,7 +752,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     padding: 12, 
     borderRadius: 8, 
-    alignItems: 'center',
+    alignItems: 'center', 
     marginTop: 8,
   },
   closeButtonText: {
