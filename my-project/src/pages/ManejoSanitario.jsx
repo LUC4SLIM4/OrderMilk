@@ -551,18 +551,27 @@ export default function ManejoSanitario() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Selecionar Doença</Text>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Buscar doença"
+              value={diseaseSearchQuery}
+              onChangeText={setDiseaseSearchQuery}
+            />
             <ScrollView style={styles.diseaseList}>
-              {diseases.map((disease, index) => (
+              {filteredDiseases.map((disease, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.diseaseItem}
                   onPress={() => {
-                    setNewTreatment({ ...newTreatment, doencaNome: disease.nome });
+                    if (showDiseaseModal) {
+                      setNewDisease({ ...newDisease, nome: disease });
+                    } else if (showTreatmentModal) {
+                      setNewTreatment({ ...newTreatment, doencaNome: disease });
+                    }
                     setShowDiseaseSelectionModal(false);
                   }}
                 >
-                  <Text style={styles.diseaseName}>{disease.nome}</Text>
-                  <Text style={styles.diseaseDescription}>{disease.descricao}</Text>
+                  <Text style={styles.diseaseName}>{disease}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
