@@ -92,10 +92,6 @@ const InicioScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Início</Text>
-        </View>
-        
         <View style={styles.buttonGrid}>
           {buttons.map((button, index) => (
             <TouchableOpacity
@@ -139,7 +135,8 @@ const InicioScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E3F2FD',
+    backgroundColor: "#FFF",
+    marginTop: 50
   },
   header: {
     backgroundColor: 'white',

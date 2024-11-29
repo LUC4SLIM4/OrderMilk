@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f0f4ff',
+    backgroundColor: "#FFF",
   },
   dataContainer: {
     flexDirection: 'row',
