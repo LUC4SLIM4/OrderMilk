@@ -37,9 +37,9 @@ const CadastrarAnimal = () => {
 
   const options = {
     genero: ["Boi", "Vaca"],
-    raca: ["Raça 1", "Raça 2", "Raça 3"],
-    cor: ["Preto", "Branco", "Marrom"],
-    momentoReprodutivo: ["Em Lactação", "Prenha", "Vazia"],
+    raca: ["Holândesa", "Pardo Suiço", "Gir", "Girolando", "Guzerá", "Sindi"],
+    cor: ["Preto", "Branco", "Marrom", "Preto e Branco", "Marrom e Branco", "Vermelho"],
+    momentoReprodutivo: ["Em Lactação", "Prenha", "Vazia", "Bezerra", "Novilha", "Pre-Secagem"],
   };
 
   const validateForm = () => {
