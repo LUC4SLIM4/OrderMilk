@@ -7,6 +7,7 @@ import GestaoNutritiva from "./src/pages/GestaoNutritiva";
 import ManejoSanitario from "./src/pages/ManejoSanitario";
 import RegistrarTiradaScreen from "./src/pages/RegistrarTiradaScreen";
 import Producao from "./src/pages/Producao"
+import ControleReprodutivo from "./src/pages/ControleReprodutivo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -106,6 +107,12 @@ const drawerItems = [
     icon: MaterialIcons,
     name: "healing",
   },
+  {
+    label: "Controle Reprodutivo",
+    screen: "ControleReprodutivo",
+    icon: MaterialIcons,
+    name: "pregnant-woman",
+  },
 ];
 
 const commonHeaderOptions = {
@@ -158,8 +165,14 @@ const AppSidebar = () => {
         component={ManejoSanitario}
         options={{ title: "Manejo Sanitário", ...commonHeaderOptions }}
       />
+      <Drawer.Screen
+        name="ControleReprodutivo"
+        component={ControleReprodutivo}
+        options={{ title: "Controle Reprodutivo", ...commonHeaderOptions }}
+      />
     </Drawer.Navigator>
   );
 };
 
 export default AppSidebar;
+
