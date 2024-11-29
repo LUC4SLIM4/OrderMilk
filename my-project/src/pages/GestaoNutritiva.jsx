@@ -189,10 +189,6 @@ const GestaoNutritiva = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Gestão Nutritiva</Text>
-      </View>
-
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Filtros</Text>
         <TouchableOpacity
@@ -341,7 +337,7 @@ const GestaoNutritiva = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f0f4ff',
+    backgroundColor: "#FFF",
   },
   header: {
     backgroundColor: '#003AAA',
